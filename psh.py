@@ -85,8 +85,7 @@ def env_cmd(var=None):
 
 def parse_to_tokens(command):
     HOME = os.environ.get('HOME')
-    tokens = [t for t in command.split(" ") if t  not in [""]]
-    tokens = [t.replace('~',HOME) if t.startswith("~") else  t for t in tokens]
+    tokens = [t.replace('~',HOME) if t.startswith("~") else  t for t in command.split(" ") if t  not in [""]]
     return tokens
 
 if __name__ == "__main__":
