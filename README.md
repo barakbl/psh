@@ -25,7 +25,6 @@ cp psh.config ~/.psh
 ## TODO
 - pipe (|) support is  very important but not implemented yet
 - save history in disk (and load it in new psh)
-- colors for nicer shell view
 - plugins support
 - tests
 - better handling of returned errors from commands

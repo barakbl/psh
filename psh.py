@@ -12,8 +12,23 @@ default_envvars = {
 }
 
 
-def load_config():
+def add_color_to_text(text,color="OKCYAN"):
+    colors = {
+    "HEADER": '\033[95m',
+    "OKBLUE": '\033[94m',
+    "OKCYAN": '\033[96m',
+    "OKGREEN": '\033[92m',
+    "WARNING": '\033[93m',
+    "FAIL": '\033[91m',
+    "BOLD": '\033[1m',
+    "UNDERLINE": '\033[4m'
+    }
+    ENDC = '\033[0m'
+    color = colors.get(color) or f"{colors['OKCYAN']}"
+    return f"{color}{text}{ENDC}"
 
+
+def load_config():
     ## default config
     for k in default_envvars.keys():
         os.environ[k] = str(default_envvars[k])
@@ -120,7 +135,7 @@ if __name__ == "__main__":
     readline.parse_and_bind("tab: complete")
     while True:
         readline.set_completer(autocomplete)
-        inp = input(f"{cwd()} {os.environ.get('PSH_PROMPT')}").strip()
+        inp = input(f"{add_color_to_text(cwd())} {os.environ.get('PSH_PROMPT')}").strip()
         tokens = parse_to_tokens(inp)
         inp = " ".join(tokens)
 
