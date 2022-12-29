@@ -14,8 +14,8 @@ python psh.py
 
 ## Features
 - command history view (in memory only)
-- a config file (see psh.config for example)
-- set and view env vars
+- a config file (save psh.config as ~/.psh and modify as needed)
+- set and view env vars (using builtin _**env**_ command)
 - show the current directory, implementation of cd and exit
 ## TODO
 - pipe (|) support is  very important but not implemented yet
