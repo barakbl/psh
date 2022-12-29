@@ -123,8 +123,6 @@ if __name__ == "__main__":
             sys.exit(0)
         elif inp.startswith("help"):
             help(inp)
-        elif inp.startswith("cwd"):
-            print(cwd(absolute=True))
         elif inp.startswith("cd"):
             cd(inp[3:].strip())
         elif inp.startswith("history"):
