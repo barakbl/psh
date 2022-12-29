@@ -99,7 +99,7 @@ def env_cmd(var=None):
 def parse_to_tokens(command):
     HOME = os.environ.get("HOME")
     tokens = [
-        t.replace("~", HOME) if t.startswith("~") else t
+        t.replace("~", HOME,1) if t.startswith("~") else t
         for t in command.split(" ")
         if t not in [""]
     ]
