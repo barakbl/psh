@@ -21,9 +21,9 @@ cp psh.config ~/.psh
 `
 - set and view env vars (using builtin _**env**_ command)
 - show the current directory, implementation of cd and exit
+- basic autocomplete support
 ## TODO
 - pipe (|) support is  very important but not implemented yet
-- compilation support
 - save history in disk (and load it in new psh)
 - colors for nicer shell view
 - plugins support
