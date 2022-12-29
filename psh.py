@@ -57,7 +57,11 @@ def insert_history(cmd):
 
 
 def help(cmd):
-    print(f"this is psh, a simple shell written in Python by Barak Bloch")
+    print(f"\n###########################################################\n"
+          f"This is psh, a simple shell written in Python by Barak Bloch\n"
+          f"homepage: https://github.com/barakbl/psh\n\n"
+          f"any question? contact me barak.bloch at gmail.com\n"
+          f"###########################################################\n")
 
 
 def cd(target):
