@@ -111,7 +111,8 @@ def parse_to_tokens(command):
 
 
 def autocomplete(text, state):
-    results = [x for x in history if x.startswith(text)] + [None]
+    vocab = history + ["cd", "pwd", "top", "whoami", "cat", "ls", "git", "echo"]
+    results = [x for x in vocab if x.startswith(text)] + [None]
     return results[state]
 
 
