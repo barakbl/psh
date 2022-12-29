@@ -18,7 +18,7 @@ python psh.py
 - set and view env vars
 - show the current directory, implementation of cd and exit
 ## TODO
-- pipe (|) support is  vary important but not implemented yet
+- pipe (|) support is  very important but not implemented yet
 - compilation support
 - save history in disk (and load it in new psh)
 - colors for nicer shell view
