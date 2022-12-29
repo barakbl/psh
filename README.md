@@ -24,5 +24,4 @@ python psh.py
 - colors for nicer shell view
 - plugins support
 - tests
-- support for ~  in paths
 - better handling of returned errors from commands

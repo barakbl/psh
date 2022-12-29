@@ -83,10 +83,17 @@ def env_cmd(var=None):
     else:
         print(dict(os.environ))
 
+def parse_to_tokens(command):
+    HOME = os.environ.get('HOME')
+    tokens = [t for t in command.split(" ") if t  not in [""]]
+    tokens = [t.replace('~',HOME) if t.startswith("~") else  t for t in tokens]
+    return tokens
+
 if __name__ == "__main__":
     while True:
         inp = input(f"{cwd()} {os.environ.get('PSH_PROMPT')}").strip()
-
+        tokens = parse_to_tokens(inp)
+        inp = " ".join(tokens)
         if inp.startswith("exit"):
             sys.exit(0)
         elif inp.startswith("help"):
