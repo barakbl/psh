@@ -97,11 +97,14 @@ def cd(target):
     last_dir = curr_dir
 
 
-def run_command(cmd):
+def run_command(cmd, tokens=None):
+    if "|" in tokens:
+        print(add_color_to_text(f"psh: That`s embarcing, pipe (|) not supported yet","FAIL"))
+        return
     try:
-        subprocess.run(cmd.split())
+        subprocess.run(tokens)
     except Exception as e:
-        print(f"psh: command not found: {cmd}")
+        print(f"psh: command not found: {tokens}")
 
 
 def env_cmd(var=None):
@@ -150,5 +153,5 @@ if __name__ == "__main__":
         elif inp.startswith("env"):
             env_cmd(inp[3:].strip())
         else:
-            run_command(inp)
+            run_command(inp,  tokens)
         insert_history(inp)
