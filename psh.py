@@ -5,13 +5,6 @@ import os, sys
 import subprocess
 import json
 
-default_envvars = {
-    "PSH_MAX_HISTORY_SIZE": 100,
-    "PSH_PROMPT": f"$ ",
-    "TERM": "xterm-256color",  # TODO
-}
-
-
 def add_color_to_text(text,color="OKCYAN"):
     colors = {
     "HEADER": '\033[95m',
@@ -26,6 +19,12 @@ def add_color_to_text(text,color="OKCYAN"):
     ENDC = '\033[0m'
     color = colors.get(color) or f"{colors['OKCYAN']}"
     return f"{color}{text}{ENDC}"
+
+default_envvars = {
+    "PSH_MAX_HISTORY_SIZE": 100,
+    "PSH_PROMPT": f"$ ",
+    "TERM": "xterm-256color",  # TODO
+}
 
 
 def load_config():
@@ -99,7 +98,8 @@ def cd(target):
 
 def run_command(cmd, tokens=None):
     if "|" in tokens:
-        print(add_color_to_text(f"psh: That`s embarcing, pipe (|) not supported yet","FAIL"))
+        ps = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        print(ps.communicate()[0].decode("utf-8")[0:-1])
         return
     try:
         subprocess.run(tokens)
@@ -116,7 +116,6 @@ def env_cmd(var=None):
             os.environ[v[0]] = v[1]
     else:
         print(dict(os.environ))
-
 
 def parse_to_tokens(command):
     HOME = os.environ.get("HOME")

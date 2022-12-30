@@ -22,9 +22,10 @@ cp psh.config ~/.psh
 - set and view env vars (using builtin _**env**_ command)
 - show the current directory, implementation of cd and exit
 - basic autocomplete support
+- pipe support
+
 ## TODO
-- pipe (|) support is  very important but not implemented yet
-- save history in disk (and load it in new psh)
+- save history in disk and use it in new psh process
 - plugins support
 - tests
 - better handling of returned errors from commands
