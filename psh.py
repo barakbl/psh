@@ -3,20 +3,22 @@ import readline
 import os, sys
 import subprocess
 
-def add_color_to_text(text,color="OKCYAN"):
+
+def add_color_to_text(text: str, color: str = "OKCYAN") -> str:
     colors = {
-    "HEADER": '\033[95m',
-    "OKBLUE": '\033[94m',
-    "OKCYAN": '\033[96m',
-    "OKGREEN": '\033[92m',
-    "WARNING": '\033[93m',
-    "FAIL": '\033[91m',
-    "BOLD": '\033[1m',
-    "UNDERLINE": '\033[4m'
+        "HEADER": '\033[95m',
+        "OKBLUE": '\033[94m',
+        "OKCYAN": '\033[96m',
+        "OKGREEN": '\033[92m',
+        "WARNING": '\033[93m',
+        "FAIL": '\033[91m',
+        "BOLD": '\033[1m',
+        "UNDERLINE": '\033[4m'
     }
     ENDC = '\033[0m'
     color = colors.get(color) or f"{colors['OKCYAN']}"
     return f"{color}{text}{ENDC}"
+
 
 default_envvars = {
     "PSH_MAX_HISTORY_SIZE": 100,
@@ -24,14 +26,16 @@ default_envvars = {
     "TERM": "xterm-256color",  # TODO
 }
 
+
 def load_default():
     for k in default_envvars:
         load_env(k, str(default_envvars[k]))
 
+
 history = []
 
 
-def cwd(absolute=False):
+def cwd(absolute: bool = False):
     d = subprocess.check_output("pwd").decode("utf-8").replace("\n", "")
     if absolute:
         return d
@@ -41,11 +45,11 @@ def cwd(absolute=False):
 last_dir = cwd(absolute=True)
 
 
-def history_cmd():
+def history_cmd() -> None:
     [print(i) for i in history[::-1]]
 
 
-def insert_history(cmd):
+def insert_history(cmd: str) -> None:
     if len(history) == os.environ.get("MAX_HISTORY_SIZE"):
         history.pop(0)
         history.append(cmd)
@@ -53,7 +57,7 @@ def insert_history(cmd):
         history.append(cmd)
 
 
-def help(cmd):
+def help(cmd: str):
     print(f"\n###########################################################\n"
           f"This is psh, a simple shell written in Python by Barak Bloch\n"
           f"homepage: https://github.com/barakbl/psh\n\n"
@@ -61,7 +65,7 @@ def help(cmd):
           f"###########################################################\n")
 
 
-def cd(target):
+def cd(target: str):
     global last_dir
     curr_dir = cwd(absolute=True)
     if not target:
@@ -79,44 +83,56 @@ def cd(target):
     last_dir = curr_dir
 
 
-def run_command(cmd, tokens=None):
+def run_command(cmd: str, tokens: list =None):
     if "|" in tokens:
-        ps = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         print(ps.communicate()[0].decode("utf-8")[0:-1])
         return
     try:
         subprocess.run(tokens)
     except Exception as e:
-        print(f"psh: command not found: {tokens}")
+        print(f"psh: command not found: {cmd}")
 
 
-def env_cmd(var=None):
+def env_cmd(var=None, ret=False):
     if var:
         v = var.split("=")
         if len(v) == 1:
-            print(os.environ.get(var, f"env variable {var} not set"))
+            out = os.environ.get(var, f"env variable {var} not set")
+            if ret:
+                return out
+            else:
+                print(out)
         else:
             os.environ[v[0]] = v[1]
     else:
-        print(dict(os.environ))
+        out = dict(os.environ)
+        if ret:
+            return out
+        else:
+            print(out)
 
-def parse_to_tokens(command):
+
+def parse_to_tokens(command: str) -> list:
     HOME = os.environ.get("HOME")
     tokens = [
-        t.replace("~", HOME,1) if t.startswith("~") else t
+        t.replace("~", HOME, 1) if t.startswith("~") else t
         for t in command.split(" ")
         if t not in [""]
     ]
     return tokens
 
 
-def autocomplete(text, state):
+def autocomplete(text: str, state):
     vocab = history + ["cd", "pwd", "top", "whoami", "cat", "ls", "git", "echo"]
     results = [x for x in vocab if x.startswith(text)] + [None]
     return results[state]
 
-def load_env(key, val):
+
+def load_env(key: str, val: str):
     os.environ[key] = val
+
+
 def source(*args):
     if len(args) == 0:
         print(add_color_to_text("psh: error, source file not passed", "FAIL"))
@@ -126,10 +142,11 @@ def source(*args):
             with open(os.path.abspath(a)) as f:
                 lines = f.readlines()
                 for l in lines:
-                    k, v = l.replace("\n","").split("=")
-                    load_env( k.strip(), v.replace("\"","").strip())
+                    k, v = l.replace("\n", "").split("=")
+                    load_env(k.strip(), v.replace("\"", "").strip())
         except:
             print(add_color_to_text(f"psh: error while load source file {a}", "FAIL"))
+
 
 def init():
     load_default()
@@ -140,13 +157,12 @@ def init():
     elif os.path.isfile(ENV_FILE):
         source(ENV_FILE)
 
-
 if __name__ == "__main__":
     readline.parse_and_bind("tab: complete")
     init()
     while True:
         readline.set_completer(autocomplete)
-        inp = input(f"{add_color_to_text(cwd())} {os.environ.get('PSH_PROMPT')}").strip()
+        inp = input(f"{env_cmd('PS1',ret=True)} {add_color_to_text(cwd())} {os.environ.get('PSH_PROMPT')} ").strip()
         tokens = parse_to_tokens(inp)
         inp = " ".join(tokens)
 
@@ -163,5 +179,5 @@ if __name__ == "__main__":
         elif inp.startswith("env"):
             env_cmd(inp[3:].strip())
         else:
-            run_command(inp,  tokens)
+            run_command(inp, tokens)
         insert_history(inp)
