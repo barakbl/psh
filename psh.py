@@ -2,6 +2,7 @@
 import readline
 import os, sys
 import subprocess
+import signal
 
 
 def add_color_to_text(text: str, color: str = "OKCYAN") -> str:
@@ -46,7 +47,7 @@ last_dir = cwd(absolute=True)
 
 
 def history_cmd() -> None:
-    [print(i) for i in history[::-1]]
+    [print(i) for i in history[::-1] if i !="-----"]
 
 
 def insert_history(cmd: str) -> None:
@@ -132,7 +133,6 @@ def autocomplete(text: str, state):
 def load_env(key: str, val: str):
     os.environ[key] = val
 
-
 def source(*args):
     if len(args) == 0:
         print(add_color_to_text("psh: error, source file not passed", "FAIL"))
@@ -147,16 +147,47 @@ def source(*args):
         except:
             print(add_color_to_text(f"psh: error while load source file {a}", "FAIL"))
 
-
+def get_history_file_path():
+    return f"{os.environ.get('HOME')}/.psh/history"
+def load_history():
+    global history
+    with open(get_history_file_path(),"r") as f:
+        data = f.read()
+        if data:
+            hist =  data.split("\n") +  ["-----"]
+            history = [h for h in hist if h !=""]
 def init():
     load_default()
+
+    signal.signal(signal.SIGTERM, sigterm_handler)
     PSH_DIR = f"{os.environ.get('HOME')}/.psh"
     ENV_FILE = f"{PSH_DIR}/env"
+    HIST_FILE = get_history_file_path()
     if not os.path.isdir(PSH_DIR):
         os.makedirs(PSH_DIR)
-    elif os.path.isfile(ENV_FILE):
+    if os.path.isfile(ENV_FILE):
         source(ENV_FILE)
+    if not os.path.isfile(HIST_FILE):
+        with open(HIST_FILE,"w") as f:
+            f.write("")
+    load_history()
+def save_history():
+    his = []
+    for h in history[::-1]:
+        if h == "-----":
+            break
+        his.append(h)
 
+    with open(get_history_file_path(),"r") as f:
+        data = f.read()
+        d = data.split("\n")
+        out = his + d
+    with open(get_history_file_path(), "w") as f:
+        f.write("\n".join(out[0:int(os.environ.get("PSH_MAX_HISTORY_SIZE"))]))
+
+def sigterm_handler(_signo, _stack_frame):
+    ## save history
+    save_history()
 if __name__ == "__main__":
     readline.parse_and_bind("tab: complete")
     init()
@@ -166,6 +197,7 @@ if __name__ == "__main__":
         tokens = parse_to_tokens(inp)
 
         if inp.startswith("exit"):
+            save_history()
             sys.exit(0)
         elif inp.startswith("help"):
             help(inp)
