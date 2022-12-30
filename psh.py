@@ -1,9 +1,7 @@
 #!/bin/env python
-
 import readline
 import os, sys
 import subprocess
-import json
 
 def add_color_to_text(text,color="OKCYAN"):
     colors = {
@@ -26,25 +24,10 @@ default_envvars = {
     "TERM": "xterm-256color",  # TODO
 }
 
+def load_default():
+    for k in default_envvars:
+        load_env(k, str(default_envvars[k]))
 
-def load_config():
-    ## default config
-    for k in default_envvars.keys():
-        os.environ[k] = str(default_envvars[k])
-
-    ### load config
-    conf_file = f"{os.environ.get('HOME')}/.psh"
-    try:
-        with open(conf_file) as f:
-            data = json.loads(f.read())
-            if "envvars" in data:
-                for v in data["envvars"]:
-                    os.environ[v] = data["envvars"][v]
-    except:
-        print("no config file found")
-
-
-load_config()
 history = []
 
 
@@ -132,9 +115,35 @@ def autocomplete(text, state):
     results = [x for x in vocab if x.startswith(text)] + [None]
     return results[state]
 
+def load_env(key, val):
+    os.environ[key] = val
+def source(*args):
+    if len(args) == 0:
+        print(add_color_to_text("psh: error, source file not passed", "FAIL"))
+
+    for a in args:
+        try:
+            with open(os.path.abspath(a)) as f:
+                lines = f.readlines()
+                for l in lines:
+                    k, v = l.replace("\n","").split("=")
+                    load_env( k.strip(), v.replace("\"","").strip())
+        except:
+            print(add_color_to_text(f"psh: error while load source file {a}", "FAIL"))
+
+def init():
+    load_default()
+    PSH_DIR = f"{os.environ.get('HOME')}/.psh"
+    ENV_FILE = f"{PSH_DIR}/env"
+    if not os.path.isdir(PSH_DIR):
+        os.makedirs(PSH_DIR)
+    elif os.path.isfile(ENV_FILE):
+        source(ENV_FILE)
+
 
 if __name__ == "__main__":
     readline.parse_and_bind("tab: complete")
+    init()
     while True:
         readline.set_completer(autocomplete)
         inp = input(f"{add_color_to_text(cwd())} {os.environ.get('PSH_PROMPT')}").strip()
@@ -145,6 +154,8 @@ if __name__ == "__main__":
             sys.exit(0)
         elif inp.startswith("help"):
             help(inp)
+        elif inp.startswith("source"):
+            source(tokens[1:])
         elif inp.startswith("cd"):
             cd(inp[3:].strip())
         elif inp.startswith("history"):

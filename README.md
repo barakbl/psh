@@ -9,18 +9,16 @@ This is in WIP and only intended for learning purpose
 python psh.py
 `
 
- 
-
-
 ## Features
 - command history view (in memory only)
-- a config file (save psh.config as ~/.psh and modify as needed):
+- a config directory, an env file example in env.example, to use it:
 
 `
-cp psh.config ~/.psh
+mkdir ~/.psh
+cp psh.config ~/.psh/env
 `
 - set and view env vars (using builtin _**env**_ command)
-- show the current directory, implementation of cd and exit
+- show the current directory, implementation of cd, exit and source
 - basic autocomplete support
 - pipe support
 
