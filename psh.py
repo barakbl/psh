@@ -164,7 +164,6 @@ if __name__ == "__main__":
         readline.set_completer(autocomplete)
         inp = input(f"{env_cmd('PS1',ret=True)} {add_color_to_text(cwd())} {os.environ.get('PSH_PROMPT')} ").strip()
         tokens = parse_to_tokens(inp)
-        inp = " ".join(tokens)
 
         if inp.startswith("exit"):
             sys.exit(0)
