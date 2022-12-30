@@ -4,7 +4,7 @@ A basic Python based UNIX shell
 This is in WIP and only intended for learning purpose
 
 
-## Running
+## Run:
 `
 python psh.py
 `
