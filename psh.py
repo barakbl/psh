@@ -42,9 +42,7 @@ def cwd(absolute: bool = False):
         return d
     return d.split("/").pop() or "/"
 
-
 last_dir = cwd(absolute=True)
-
 
 def history_cmd() -> None:
     [print(i) for i in history[::-1] if i !="-----"]
@@ -57,14 +55,12 @@ def insert_history(cmd: str) -> None:
     else:
         history.append(cmd)
 
-
 def help(cmd: str):
     print(f"\n###########################################################\n"
           f"This is psh, a simple shell written in Python by Barak Bloch\n"
           f"homepage: https://github.com/barakbl/psh\n\n"
           f"any question? contact me barak.bloch at gmail.com\n"
           f"###########################################################\n")
-
 
 def cd(target: str):
     global last_dir
@@ -188,12 +184,13 @@ def save_history():
 def sigterm_handler(_signo, _stack_frame):
     ## save history
     save_history()
-if __name__ == "__main__":
+
+def run():
     readline.parse_and_bind("tab: complete")
     init()
     while True:
         readline.set_completer(autocomplete)
-        inp = input(f"{env_cmd('PS1',ret=True)} {add_color_to_text(cwd())} {os.environ.get('PSH_PROMPT')} ").strip()
+        inp = input(f"{env_cmd('PS1', ret=True)} {add_color_to_text(cwd())} {os.environ.get('PSH_PROMPT')} ").strip()
         tokens = parse_to_tokens(inp)
 
         if inp.startswith("exit"):
@@ -212,3 +209,5 @@ if __name__ == "__main__":
         else:
             run_command(inp, tokens)
         insert_history(inp)
+if __name__ == "__main__":
+    run()
